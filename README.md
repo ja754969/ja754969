@@ -9,8 +9,7 @@ I'm an undergraduate student at the department of marine environmental informati
 ## Skills Languages:computer:
 |MATLAB| Python | Julia |
 |:----:|:------:|:-----:|
-| ![](https://i.imgur.com/Tu6zPDM.png) | ![](https://i.imgur.com/frTv2v0.png) |![](https://i.imgur.com/u5lJLiO.png)
-|
+| ![](https://i.imgur.com/Tu6zPDM.png) | ![](https://i.imgur.com/frTv2v0.png) |![](https://i.imgur.com/u5lJLiO.png)|
 
 | IDL | | |
 |:--------:| -------- | -------- |
