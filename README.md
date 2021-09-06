@@ -1,4 +1,3 @@
-{%hackmd SybccZ6XD %}
 [![hackmd-github-sync-badge](https://hackmd.io/Jvtzc1QqTwOdB0VX-5YWAw/badge)](https://hackmd.io/Jvtzc1QqTwOdB0VX-5YWAw)
 ###### tags: `Self-Introduction` 
 # About me
@@ -33,3 +32,6 @@ I'm an undergraduate student at the department of marine environmental informati
 ### :guitar:Life
 :link:[![](https://i.imgur.com/8yAVbyf.png)](https://linkby.tw/JadenT)   
 :link:[![](https://i.imgur.com/ZlM0fbO.png)](https://linktr.ee/jaden754969)  
+
+
+{%hackmd SybccZ6XD %}
