@@ -1,7 +1,7 @@
 [![hackmd-github-sync-badge](https://hackmd.io/Jvtzc1QqTwOdB0VX-5YWAw/badge)](https://hackmd.io/Jvtzc1QqTwOdB0VX-5YWAw)
 ###### tags: `Self-Introduction` 
 # About me
-My name is Yu-Hao Tseng. I was born in Kaohsiung. I’m interested in writing popular music and playing the guitar. I graduated from high school in 2018.   
+My name is Yu-Hao Tseng. I was born in Kaohsiung. In my spare time, I enjoys writing popular music pop music and playing the guitar. I graduated from high school in 2018.   
 🗨📧 jaden754969@gmail.com   
 I'm an undergraduate student at the department of marine environmental informatics, National Taiwan Ocean University, Keelung, Taiwan, since 2018. I am currently working toward the B.S. and M.S. degrees in marine of environmental informatics at the Laboratory of Environmental Remote Sensing, National Taiwan Ocean University. My research interests include physical oceanography and applying remote sensing data to the studies of ocean phenomena.   
 🗨📧 00781035@email.ntou.edu.tw  
