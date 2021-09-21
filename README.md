@@ -1,40 +1,41 @@
-[![hackmd-github-sync-badge](https://hackmd.io/Jvtzc1QqTwOdB0VX-5YWAw/badge)](https://hackmd.io/Jvtzc1QqTwOdB0VX-5YWAw)
-###### tags: `Self-Introduction` 
-# About me
-My name is Yu-Hao Tseng. I was born in Kaohsiung. In my spare time, I enjoys writing popular music pop music and playing the guitar. I graduated from high school in 2018.   
-🗨📧 jaden754969@gmail.com   
-I'm an undergraduate student at the department of marine environmental informatics, National Taiwan Ocean University, Keelung, Taiwan, since 2018. I am currently working toward the B.S. and M.S. degrees in marine of environmental informatics at the Laboratory of Environmental Remote Sensing, National Taiwan Ocean University. My research interests include physical oceanography and applying remote sensing data to the studies of ocean phenomena.   
-🗨📧 00781035@email.ntou.edu.tw  
-## Skills Languages:computer:
-|MATLAB| Python | Julia |
-|:----:|:------:|:-----:|
-| ![](https://i.imgur.com/Tu6zPDM.png) | ![](https://i.imgur.com/frTv2v0.png) |![](https://i.imgur.com/u5lJLiO.png)|
+---
+title: About me
+disqus: hackmd
+---
+[![hackmd-github-sync-badge](https://hackmd.io/Jvtzc1QqTwOdB0VX-5YWAw/badge)](https://hackmd.io/Jvtzc1QqTwOdB0VX-5YWAw)  
 
-| IDL | | |
-|:--------:| -------- | -------- |
-|![](https://i.imgur.com/dVp2HXE.png)|  |  |
+About me
+===
+- [Home Page](https://hackmd.io/@jaden754969/SkgPIMv-K)
+- [Introduction](/LIEW5wCRQrW-ZpXeNwk-HQ)  
 
-## My personal website
-* Dev   
-:link:https://dev.to/ja754969  
-* linkedin  
-    <div class="badge-base LI-profile-badge" data-locale="zh_TW" data-size="medium" data-theme="dark" data-type="VERTICAL" data-vanity="yu-hao-tseng-70316221b" data-version="v1"><a class="badge-base__link LI-simple-link" href="https://tw.linkedin.com/in/yu-hao-tseng-70316221b?trk=profile-badge">Yu-Hao Tseng</a></div>  
-              
+Skills Languages:computer:
+---
+- [MATLAB](/Ni_4yCUtQdm0UUGzdv3biA)  
+- [Python](/3qp9EMFoSRa3GA4aUXtWuw)  
+- [Julia](/TIN5rRncRze0sncMhTfP6g)  
+- [IDL](/nCMjf12PRd-JFFgBnf1F8w)  
 
-### :book:Research
-* ResearchGate  
-:link:https://www.researchgate.net/profile/Yu-Hao-Tseng  
-### :school:Education
-* Kaohsiung Municipal [Chong Chen High School](http://www.cchs.kh.edu.tw/home)
-* [National Taiwan Ocean University](https://mei.ntou.edu.tw/?Lang=en)
+My personal website
+---
+- [Dev](https://dev.to/ja754969) [target=_blank]  
+- [Linkedin](https://tw.linkedin.com/in/yu-hao-tseng-70316221b?trk=profile-badge) [target=_blank]  
 
+:book:Research
+---
+- [ResearchGate](https://www.researchgate.net/profile/Yu-Hao-Tseng) [target=_blank]  
 
-<iframe src="https://www.google.com/maps/d/u/0/embed?mid=1T-Vw61jVgeYmmGFz4t0F5UhSHSpCzAU1" width="640" height="480"></iframe>
+:school:Education
+---
+- [Kaohsiung Municipal Chong Chen High School](http://www.cchs.kh.edu.tw/home) [target=_blank]  
+- [National Taiwan Ocean University](https://mei.ntou.edu.tw/?Lang=en) [target=_blank]  
+- [Location](/O4ENtuyORbm7-8APFNiXig)  
 
-
-### :guitar:Life
-:link:[![](https://i.imgur.com/8yAVbyf.png)](https://linkby.tw/JadenT)   
-:link:[![](https://i.imgur.com/ZlM0fbO.png)](https://linktr.ee/jaden754969)  
+:guitar:Life
+---
+- [LinkTree](https://linktr.ee/jaden754969) [target=_blank]  
 
 
 {%hackmd SybccZ6XD %}
+
+###### tags: `Self-Introduction`   
