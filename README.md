@@ -15,6 +15,7 @@ Skills Languages:computer:
 - [Python](/3qp9EMFoSRa3GA4aUXtWuw)  
 - [Julia](/TIN5rRncRze0sncMhTfP6g)  
 - [IDL](/nCMjf12PRd-JFFgBnf1F8w)  
+- [Fortran](/p4JtIobBRpmG6NtCVO604w)  
 
 My personal website
 ---
@@ -31,9 +32,6 @@ My personal website
 - [National Taiwan Ocean University](https://mei.ntou.edu.tw/?Lang=en) [target=_blank]  
 - [Location](/O4ENtuyORbm7-8APFNiXig)  
 
-:guitar:Life
----
-- [LinkTree](https://linktr.ee/jaden754969) [target=_blank]  
 
 
 {%hackmd SybccZ6XD %}
