@@ -1,0 +1,61 @@
+# Dashboard Configuration
+profiles:
+  researchgate: "https://www.researchgate.net/profile/Yu-Hao-Tseng"
+  linkedin: "https://www.linkedin.com/in/yu-hao-tseng-70316221b/"
+  google_scholar: "https://scholar.google.com/citations?user=_zozF1AAAAAJ"
+
+# README.md file path
+readme_path: "README.md"
+
+# Update frequency (for reference)
+update_frequency: "daily"
+
+# Sections to include in the dashboard
+sections:
+  about: true
+  publications: true
+  citations: true
+  research_interests: true
+  education: true
+  experience: true
+  github_stats: true
+
+# Manual data (update these when needed)
+manual_data:
+  name: "Yu-Hao Tseng"
+  institution: "National Taiwan Ocean University"
+  department: "Department of Marine Environmental Informatics"
+  research_interests:
+    - "Ocean Current Analysis"
+    - "Marine Dynamics"
+    - "Geographic Information Systems (GIS)"
+    - "Data Visualization"
+    - "MATLAB Ocean Modeling"
+    - "OpenDrift Trajectory Modeling"
+  
+  current_projects:
+    - "Ocean Current Observation and Analysis"
+    - "GMT (Generic Mapping Tools) Applications"
+    - "MATLAB Ocean Dynamics Modeling"
+    - "OpenDrift Trajectory Modeling"
+  
+  education:
+    - institution: "National Taiwan Ocean University"
+      degree: "Marine Environmental Inforamtics"
+      location: "Taiwan"
+    - institution: "Kaohsiung Municipal Chong Chen High School"
+      degree: "High School Diploma"
+      location: "Kaohsiung, Taiwan"
+
+# GitHub repository settings
+github:
+  username: "ja754969"
+  show_stats: true
+  show_languages: true
+  theme: "radical"
+
+# API settings (for future use)
+api_settings:
+  rate_limit_delay: 2  # seconds between requests
+  timeout: 30  # seconds
+  retries: 3
