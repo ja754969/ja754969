@@ -8,7 +8,7 @@
   },
   "automation": {
     "updateSchedule": {
-      "primary": "35 10 * * *",
+      "primary": "20 9 * * *",
       "secondary": "25 2 * * *"
     },
     "triggers": {
