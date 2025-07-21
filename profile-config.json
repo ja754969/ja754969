@@ -1,0 +1,81 @@
+{
+  "profile": {
+    "name": "Ja754969",
+    "displayName": "Marine Environmental Scientist",
+    "tagline": "Advancing ocean science through data analysis and remote sensing",
+    "website": "https://ja754969.github.io/cv/",
+    "location": "Keelung, Taiwan"
+  },
+  "automation": {
+    "updateSchedule": {
+      "primary": "0 2 * * *",
+      "secondary": "0 14 * * *"
+    },
+    "triggers": {
+      "onPush": true,
+      "onSchedule": true,
+      "onManual": true
+    },
+    "changeDetection": {
+      "contentHash": true,
+      "lastModified": true,
+      "minimumInterval": 21600
+    }
+  },
+  "content": {
+    "sections": {
+      "about": true,
+      "education": true,
+      "research": true,
+      "skills": true,
+      "achievements": true,
+      "languages": true,
+      "interests": true,
+      "hobbies": true,
+      "stats": true
+    },
+    "customization": {
+      "theme": "radical",
+      "showPrivateContributions": true,
+      "showAllCommits": true,
+      "statsLanguageCount": 8
+    }
+  },
+  "extraction": {
+    "selectors": {
+      "summary": "h2:contains('Professional Summary')",
+      "education": "h2:contains('Education')",
+      "research": "h2:contains('Research Experience')",
+      "skills": "h2:contains('Technical Skills')",
+      "achievements": "h2:contains('Honors and Awards')",
+      "languages": "h2:contains('Languages')"
+    },
+    "fallbacks": {
+      "summary": "Marine environmental scientist specializing in physical oceanography and remote sensing.",
+      "title": "Marine Environmental Scientist | Physical Oceanography Researcher"
+    }
+  },
+  "social": {
+    "links": {
+      "email": "21281001@email.ntou.edu.tw",
+      "researchgate": "",
+      "googlescholar": "",
+      "orcid": "",
+      "linkedin": ""
+    },
+    "badges": {
+      "style": "for-the-badge",
+      "showIcons": true
+    }
+  },
+  "debugging": {
+    "verbose": false,
+    "saveIntermediateFiles": false,
+    "logContentChanges": true
+  },
+  "notifications": {
+    "onSuccess": false,
+    "onFailure": true,
+    "onContentChange": true
+  }
+}
