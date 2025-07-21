@@ -8,8 +8,8 @@
   },
   "automation": {
     "updateSchedule": {
-      "primary": "0 2 * * *",
-      "secondary": "0 14 * * *"
+      "primary": "35 10 * * *",
+      "secondary": "25 2 * * *"
     },
     "triggers": {
       "onPush": true,
