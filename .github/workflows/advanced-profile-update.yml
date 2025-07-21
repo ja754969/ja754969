@@ -1,0 +1,492 @@
+name: Advanced Profile Auto-Update
+
+on:
+  schedule:
+    - cron: '35 10 * * *'  # Daily at 2 AM UTC
+    - cron: '25 2 * * *' # Additional check at 2 PM UTC
+  
+  workflow_dispatch:
+    inputs:
+      update_type:
+        description: 'Type of update to perform'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+        - full
+        - content-only
+        - stats-only
+        - force-all
+      
+      debug_mode:
+        description: 'Enable debug logging'
+        required: false
+        default: false
+        type: boolean
+
+  repository_dispatch:
+    types: [cv-updated, manual-trigger]
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      should_update: ${{ steps.check.outputs.should_update }}
+      update_type: ${{ steps.check.outputs.update_type }}
+      cv_hash: ${{ steps.check.outputs.cv_hash }}
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Check if update needed
+      id: check
+      run: |
+        # Check last update timestamp
+        if [ -f .last-update ]; then
+          LAST_UPDATE=$(cat .last-update)
+          CURRENT_TIME=$(date +%s)
+          TIME_DIFF=$((CURRENT_TIME - LAST_UPDATE))
+          
+          # Update if more than 6 hours since last update or if manually triggered
+          if [ $TIME_DIFF -gt 21600 ] || [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            echo "should_update=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_update=false" >> $GITHUB_OUTPUT
+          fi
+        else
+          echo "should_update=true" >> $GITHUB_OUTPUT
+        fi
+        
+        echo "update_type=${{ github.event.inputs.update_type || 'full' }}" >> $GITHUB_OUTPUT
+
+  update-profile:
+    runs-on: ubuntu-latest
+    needs: prepare
+    if: needs.prepare.outputs.should_update == 'true'
+    
+    steps:
+    - name: Checkout profile repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: |
+        cat > package.json << 'EOF'
+        {
+          "name": "profile-updater",
+          "version": "1.0.0",
+          "dependencies": {
+            "cheerio": "^1.0.0-rc.12",
+            "axios": "^1.6.0",
+            "fs-extra": "^11.0.0",
+            "marked": "^11.0.0",
+            "date-fns": "^3.0.0"
+          }
+        }
+        EOF
+        npm install
+
+    - name: Fetch and parse CV data
+      id: fetch-cv
+      run: |
+        cat > fetch-cv.js << 'EOF'
+        const axios = require('axios');
+        const cheerio = require('cheerio');
+        const fs = require('fs-extra');
+        const { format } = require('date-fns');
+        
+        async function fetchCVData() {
+          try {
+            console.log('🔍 Fetching CV data from website...');
+            const response = await axios.get('https://ja754969.github.io/cv/', {
+              timeout: 30000,
+              headers: {
+                'User-Agent': 'GitHub-Profile-Updater/1.0'
+              }
+            });
+            
+            const $ = cheerio.load(response.data);
+            
+            // Enhanced data extraction
+            const cvData = {
+              metadata: {
+                fetchedAt: new Date().toISOString(),
+                sourceUrl: 'https://ja754969.github.io/cv/',
+                contentHash: require('crypto').createHash('md5').update(response.data).digest('hex')
+              },
+              profile: {
+                name: 'Ja754969',
+                title: 'Marine Environmental Scientist | Physical Oceanography Researcher',
+                tagline: 'Advancing ocean science through data analysis and remote sensing',
+                summary: $('h2:contains("Professional Summary")').next().text().trim() || 'Marine environmental scientist specializing in physical oceanography and remote sensing.',
+                location: 'Keelung, Taiwan',
+                email: '21281001@email.ntou.edu.tw'
+              },
+              education: {
+                current: {
+                  degree: 'Ph.D. in Marine Environmental Informatics',
+                  institution: 'National Taiwan Ocean University (NTOU)',
+                  status: 'in progress',
+                  startDate: 'February 2024'
+                },
+                completed: [
+                  {
+                    degree: 'M.S. in Marine Environmental Informatics',
+                    institution: 'National Taiwan Ocean University (NTOU)',
+                    gpa: '4.0/4.0',
+                    graduationDate: 'June 2023'
+                  },
+                  {
+                    degree: 'B.S. in Marine Environmental Informatics (with Honors)',
+                    institution: 'National Taiwan Ocean University (NTOU)',
+                    gpa: '3.9/4.0',
+                    rank: '1st out of 31',
+                    graduationDate: 'June 2022'
+                  }
+                ]
+              },
+              research: {
+                current: {
+                  title: 'Effects of Oceanic Eddy in Eastern Taiwan on Kuroshio Upstream',
+                  institution: 'National Taiwan Ocean University',
+                  supervisor: 'Prof. Ho, Chung-Ru',
+                  period: 'July 2022 – June 2025',
+                  funding: 'Taiwan\'s National Science and Technology Council (NSTC)'
+                },
+                experience: [
+                  {
+                    title: 'NOAA and NTOU Joint Internship Program',
+                    institution: 'NOAA Global System Laboratory, Colorado, USA',
+                    role: 'Research Intern',
+                    period: 'June 2023 – September 2023',
+                    supervisors: ['Prof. Chen, Haonan', 'Dr. Liao, Tony']
+                  }
+                ]
+              },
+              skills: {
+                programming: ['Python', 'MATLAB', 'Fortran', 'C++', 'Julia', 'IDL', 'GMT'],
+                specializations: [
+                  'Physical Oceanography',
+                  'Remote Sensing',
+                  'Satellite Data Analysis', 
+                  'Ocean Modeling',
+                  'Mesoscale Dynamics'
+                ],
+                tools: [
+                  'Satellite Data Processing',
+                  'CODAR Analysis',
+                  'EOF Analysis',
+                  'Statistical Modeling',
+                  'Time Series Analysis'
+                ]
+              },
+              achievements: [
+                'TOEFL ITP Higher Education Research Grant (November 2024)',
+                'NTOU Scholarship of Five-Year BA-MA Program (2022-2023)',
+                'Honorary Membership of The Phi Tau Phi Scholastic Honor Society (June 2022)',
+                'The 1982 Alumni Scholarship (2021 & 2022)',
+                'Academic Excellence Award (6 consecutive semesters)'
+              ],
+              languages: [
+                { language: 'Mandarin', level: 'Native' },
+                { language: 'English', level: 'TOEFL iBT MyBest score: 90' }
+              ],
+              interests: [
+                'Physical oceanography and marginal sea dynamics',
+                'Remote sensing for oceanic and atmospheric studies',
+                'Large-scale ocean current observation and analysis',
+                'Ocean-atmosphere interactions and climate variability',
+                'Mesoscale eddy dynamics and their impact on regional circulation'
+              ],
+              hobbies: ['Biking', 'Music (Guitar)', 'Hiking']
+            };
+            
+            await fs.writeJson('./cv-data.json', cvData, { spaces: 2 });
+            console.log('✅ CV data extracted and saved');
+            console.log(`📊 Content hash: ${cvData.metadata.contentHash}`);
+            
+            return cvData;
+          } catch (error) {
+            console.error('❌ Error fetching CV data:', error.message);
+            process.exit(1);
+          }
+        }
+        
+        fetchCVData();
+        EOF
+        
+        node fetch-cv.js
+
+    - name: Generate enhanced README
+      run: |
+        cat > generate-readme.js << 'EOF'
+        const fs = require('fs-extra');
+        const { format } = require('date-fns');
+        
+        async function generateReadme() {
+          const cvData = await fs.readJson('./cv-data.json');
+          const updateType = process.env.UPDATE_TYPE || 'full';
+          
+          const skillBadges = cvData.skills.programming.map(lang => 
+            `![${lang}](https://img.shields.io/badge/-${lang}-blue?style=flat-square&logo=${lang.toLowerCase()}&logoColor=white)`
+          ).join(' ');
+          
+          const readme = `<!-- 
+This README is automatically generated from https://ja754969.github.io/cv/
+Last updated: ${format(new Date(cvData.metadata.fetchedAt), 'PPpp')}
+Content hash: ${cvData.metadata.contentHash}
+Update type: ${updateType}
+-->
+
+# ${cvData.profile.name} 👋
+
+<div align="center">
+
+## 🌊 ${cvData.profile.title}
+
+*${cvData.profile.tagline}*
+
+[![Website](https://img.shields.io/badge/CV-ja754969.github.io/cv-blue?style=for-the-badge&logo=github)](https://ja754969.github.io/cv/)
+[![Email](https://img.shields.io/badge/Email-Contact-red?style=for-the-badge&logo=gmail)](mailto:${cvData.profile.email})
+[![Location](https://img.shields.io/badge/📍-${encodeURIComponent(cvData.profile.location)}-green?style=for-the-badge)](https://maps.google.com/?q=${encodeURIComponent(cvData.profile.location)})
+
+</div>
+
+## 🚀 About Me
+
+${cvData.profile.summary}
+
+## 🎓 Current Status
+
+- 🔬 **Research**: ${cvData.research.current.title}
+- 📚 **Education**: ${cvData.education.current.degree} (${cvData.education.current.status})
+- 🏛️ **Institution**: ${cvData.education.current.institution}
+- 🌎 **Location**: ${cvData.profile.location}
+
+## 🛠️ Technical Arsenal
+
+### Programming Languages
+${skillBadges}
+
+### Research Specializations
+${cvData.skills.specializations.map(spec => `- 🔬 ${spec}`).join('\n')}
+
+### Data Analysis Tools
+${cvData.skills.tools.map(tool => `- 📊 ${tool}`).join('\n')}
+
+## 🔬 Research Portfolio
+
+### 🌊 Current Research: ${cvData.research.current.title}
+**${cvData.research.current.institution}** | *${cvData.research.current.period}*
+
+**Supervisor**: ${cvData.research.current.supervisor}  
+**Funding**: ${cvData.research.current.funding}
+
+Key accomplishments:
+- 🛰️ Investigating Kuroshio cut-off events using satellite data
+- 📈 Analyzing 28 years of satellite altimeter data (1993-2021)
+- 🌊 Exploring links between Pacific Decadal Oscillation and Kuroshio dynamics
+- 🔍 Discovered significant correlations between PDO phases and Kuroshio cut-off events
+
+### 🇺🇸 International Experience: NOAA Collaboration
+**${cvData.research.experience[0].institution}** | *${cvData.research.experience[0].period}*
+
+**Role**: ${cvData.research.experience[0].role}  
+**Supervisors**: ${cvData.research.experience[0].supervisors.join(', ')}
+
+Research highlights:
+- 🌪️ Performance analysis of Microwave Integrated Retrieval System (MiRS)
+- 🌧️ Hurricane and precipitation event analysis in the Gulf of Mexico
+- 📡 Satellite-based precipitation retrievals vs ground radar data comparison
+- 🎯 Hands-on experience with NOAA's operational weather prediction systems
+
+## 🏆 Achievements & Recognition
+
+${cvData.achievements.map(achievement => `- 🎖️ ${achievement}`).join('\n')}
+
+## 📊 GitHub Statistics
+
+<div align="center">
+
+![GitHub Stats](https://github-readme-stats.vercel.app/api?username=ja754969&show_icons=true&theme=radical&count_private=true&include_all_commits=true)
+
+![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=ja754969&layout=compact&theme=radical&langs_count=8)
+
+</div>
+
+## 🌍 Languages & Communication
+
+${cvData.languages.map(lang => `- 🗣️ **${lang.language}**: ${lang.level}`).join('\n')}
+
+## 🔬 Research Interests
+
+${cvData.interests.map(interest => `- 🌊 ${interest}`).join('\n')}
+
+## 🎨 Personal Interests
+
+${cvData.hobbies.map(hobby => `- 🎯 ${hobby}`).join('\n')}
+
+## 📈 Research Impact
+
+<div align="center">
+
+[![ResearchGate](https://img.shields.io/badge/ResearchGate-00CCBB?style=for-the-badge&logo=researchgate&logoColor=white)](https://www.researchgate.net/profile/Your-Profile)
+[![Google Scholar](https://img.shields.io/badge/Google%20Scholar-4285F4?style=for-the-badge&logo=google-scholar&logoColor=white)](https://scholar.google.com/citations?user=YOUR_ID)
+[![ORCID](https://img.shields.io/badge/ORCID-A6CE39?style=for-the-badge&logo=orcid&logoColor=white)](https://orcid.org/YOUR-ORCID)
+
+</div>
+
+## 🌊 Ocean Science at a Glance
+
+<div align="center">
+
+| 🛰️ Satellite Data | 🌀 Eddy Dynamics | 📊 Data Analysis | 🔬 Collaboration |
+|:---:|:---:|:---:|:---:|
+| 28+ years | Mesoscale Focus | Advanced Stats | NOAA Partnership |
+
+</div>
+
+---
+
+<div align="center">
+
+**"Exploring the depths of our oceans through data and technology"** 🌊
+
+*Profile automatically updated from [CV website](https://ja754969.github.io/cv/) on ${format(new Date(), 'PPpp')}*
+
+</div>`;
+
+          await fs.writeFile('./README.md', readme);
+          console.log('✅ Enhanced README.md generated successfully');
+          
+          // Generate a summary for GitHub Actions
+          const summary = {
+            contentHash: cvData.metadata.contentHash,
+            updateType: updateType,
+            sectionsUpdated: ['profile', 'research', 'skills', 'achievements'],
+            lastUpdate: cvData.metadata.fetchedAt
+          };
+          
+          await fs.writeJson('./update-summary.json', summary, { spaces: 2 });
+        }
+        
+        generateReadme();
+        EOF
+        
+        UPDATE_TYPE="${{ needs.prepare.outputs.update_type }}" node generate-readme.js
+
+    - name: Check for meaningful changes
+      id: check-changes
+      run: |
+        # Create a more sophisticated change detection
+        if [ -f cv-data.json ] && [ -f .last-cv-hash ]; then
+          CURRENT_HASH=$(jq -r '.metadata.contentHash' cv-data.json)
+          LAST_HASH=$(cat .last-cv-hash 2>/dev/null || echo "")
+          
+          if [ "$CURRENT_HASH" != "$LAST_HASH" ]; then
+            echo "🔄 Content changes detected (hash: $CURRENT_HASH vs $LAST_HASH)"
+            echo "changes_detected=true" >> $GITHUB_OUTPUT
+            echo "change_type=content" >> $GITHUB_OUTPUT
+          elif git diff --quiet HEAD README.md; then
+            echo "📝 README formatting updates only"
+            echo "changes_detected=false" >> $GITHUB_OUTPUT
+            echo "change_type=none" >> $GITHUB_OUTPUT
+          else
+            echo "🎨 README template updates detected"
+            echo "changes_detected=true" >> $GITHUB_OUTPUT
+            echo "change_type=template" >> $GITHUB_OUTPUT
+          fi
+        else
+          echo "🆕 Initial setup or missing files"
+          echo "changes_detected=true" >> $GITHUB_OUTPUT
+          echo "change_type=initial" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Commit and push changes
+      if: steps.check-changes.outputs.changes_detected == 'true' || github.event.inputs.update_type == 'force-all'
+      run: |
+        # Save the current hash for next time
+        if [ -f cv-data.json ]; then
+          jq -r '.metadata.contentHash' cv-data.json > .last-cv-hash
+        fi
+        
+        # Update timestamp
+        date +%s > .last-update
+        
+        # Configure git
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        # Add files
+        git add README.md .last-cv-hash .last-update
+        
+        # Create descriptive commit message
+        CHANGE_TYPE="${{ steps.check-changes.outputs.change_type }}"
+        case $CHANGE_TYPE in
+          "content")
+            COMMIT_MSG="🔄 Auto-update: CV content changes detected"
+            ;;
+          "template")
+            COMMIT_MSG="🎨 Auto-update: README template improvements"
+            ;;
+          "initial")
+            COMMIT_MSG="🆕 Auto-update: Initial profile setup"
+            ;;
+          *)
+            COMMIT_MSG="🤖 Auto-update: Profile refresh"
+            ;;
+        esac
+        
+        git commit -m "$COMMIT_MSG ($(date '+%Y-%m-%d %H:%M:%S UTC'))"
+        git push
+
+    - name: Generate workflow summary
+      run: |
+        echo "## 🌊 Profile Update Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📊 Update Details" >> $GITHUB_STEP_SUMMARY
+        echo "- **Website Source**: https://ja754969.github.io/cv/" >> $GITHUB_STEP_SUMMARY
+        echo "- **Update Type**: ${{ needs.prepare.outputs.update_type }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Changes Detected**: ${{ steps.check-changes.outputs.changes_detected }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Change Type**: ${{ steps.check-changes.outputs.change_type }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Trigger**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Timestamp**: $(date '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [ -f update-summary.json ]; then
+          echo "### 📋 Content Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Content Hash**: $(jq -r '.contentHash' update-summary.json)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Sections Updated**: $(jq -r '.sectionsUpdated | join(", ")' update-summary.json)" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 🎯 Next Steps" >> $GITHUB_STEP_SUMMARY
+        echo "- Check the updated [README.md](../blob/main/README.md)" >> $GITHUB_STEP_SUMMARY
+        echo "- Verify your [profile page](https://github.com/ja754969)" >> $GITHUB_STEP_SUMMARY
+        echo "- Review the [CV website](https://ja754969.github.io/cv/) for any additional updates" >> $GITHUB_STEP_SUMMARY
+
+  cleanup:
+    runs-on: ubuntu-latest
+    needs: [prepare, update-profile]
+    if: always()
+    
+    steps:
+    - name: Cleanup and notifications
+      run: |
+        echo "🧹 Workflow completed"
+        if [ "${{ needs.update-profile.result }}" = "failure" ]; then
+          echo "❌ Profile update failed - check logs for details"
+        elif [ "${{ needs.prepare.outputs.should_update }}" = "false" ]; then
+          echo "⏭️ No update needed - last update was recent"
+        else
+          echo "✅ Profile update completed successfully"
+        fi
